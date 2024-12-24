@@ -1,0 +1,692 @@
+{% extends 'base.html' %}
+
+{% block title %}MediFirst | Home{% endblock %}
+
+{% block content %}
+{% load static %}
+
+
+{% load cart %}
+{% load custom_filter %}
+
+  <!-- Products CSS File -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/products.css' %}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+  {% block navbar %}      
+      <nav class="nav-menu d-none d-lg-block">
+        <ul>
+          <li class="active"><a href="/">Главная страница</a></li>
+          <li><a href="/products">Товары</a></li>
+          <li><a href="/#appointment" class="scrollto"><span>Запись</span></a>
+          <li><a href="/doctor_login" id="doctorlogin"><span>Вход для докторов</span></a></li>
+          <!-- <li><a href="/#contact">Contact</a></li> -->
+          <li><a href="#" data-target="#mymodal" data-toggle="modal">Пожертвовать</a></li>
+          <li><a href="/orders">Мои заказы</a></li>
+          </li>
+        </ul>
+      </nav><!-- .nav-menu -->
+{% endblock %}
+
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="d-flex align-items-center">
+  <div class="container">
+    <h1>Добро пожаловать на MediFirst</h1>
+    <h2>Наши онлайн-аптеки могут сэкономить до 95% <br>на твоих лекарств.</h2>
+    <a href="/products" class="btn-get-started scrollto">Исследуйте сейчас &#8594;</a>
+  </div>
+</section><!-- End Hero -->
+
+<main id="main">
+
+  <!-- ======= Why Us Section ======= -->
+  <section id="why-us" class="why-us">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-lg-4 d-flex align-items-stretch">
+          <div class="content">
+            <h3>Зачем выбирать MediFirst?</h3>
+            <p>
+              Покупатели все больше стремятся к тому, чтобы они могли совершать покупки <span>круглосуточно</span>, из <span>любой точти</span>, и на <span>любом устройстве</span> они выбирают, когда удобство становится главным приоритетом и
+              <span>MediFirst</span> обеспечивает лучшее удобство для покупателей.
+
+              Доступность онлайн больше чем просто удобство, когда дело доходит до пожилых и инвалидов. Так,
+              возможность просматривать свои <span>ваше время</span> наша <span>основная задача</span>.
+            </p>
+            <div class="text-center">
+              <a href="#" class="more-btn">Узнать больше <i class="bx bx-chevron-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8 d-flex align-items-stretch">
+          <div class="icon-boxes d-flex flex-column justify-content-center">
+            <div class="row">
+              <div class="col-xl-4 d-flex align-items-stretch">
+                <div class="icon-box mt-4 mt-xl-0">
+                  <i class='bx bx-wallet-alt'></i>
+                  <h4>Лучшая цена</h4>
+                  <p>Во времена высокой стоимости, MediFirst предоставляет эффективный способ покупки лекарств в самых дешевых
+                    сумма.</p>
+                </div>
+              </div>
+              <div class="col-xl-4 d-flex align-items-stretch">
+                <div class="icon-box mt-4 mt-xl-0">
+                  <i class='bx bx-lock-alt'></i>
+                  <h4>Лучшая защита</h4>
+                  <p>MediFirst обеспечивает наилучшие меры безопасности для данных клиентов и пытается выполнить
+                    потребности клиента.</p>
+                </div>
+              </div>
+              <div class="col-xl-4 d-flex align-items-stretch">
+                <div class="icon-box mt-4 mt-xl-0">
+                  <i class='bx bx-gift'></i>
+                  <h4>Пожертвования</h4>
+                  <p>Выполнять простые требования, дарить нам лекарства, повысить нашу производительность и получить лучшие подарки.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div><!-- End .content-->
+        </div>
+      </div>
+
+    </div>
+  </section><!-- End Why Us Section -->
+
+
+  <!-- ======= Latest Medicines Section ======= -->
+
+  <section id="myproduct">
+
+    <div class="products">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Последние товары</h2>
+          <p>Мы работаем в сфере качественных медикаментозных услуг. Мы предоставляем вам самые лучшие и правильные проверенные лекарства . Итак, Вот некоторые последние продукты, доступные на MediFirst. Спасибо!</p>
+        </div>
+
+        <div class="product-items">
+          
+        {% for product in products %}
+          <!-- single product -->
+          <div class="product" id={{product.id}}>
+            <div class="product-content">
+              <div class="product-img" style="transition: all 1s ease;">
+                <img src="{{product.frontimg.url}}" alt="product image">
+              </div>
+              <!-- {{product | is_in_cart:request.session.cart}} -->
+              <div class="product-btns">
+                {% if product|is_in_cart:request.session.cart %}
+                <div class="card-footer p-0 no-gutters form-control h-auto">
+                  <div class="row no-gutters">
+                    <form action="/#{{product.id}}" class="col-2" method="post">
+                      {% csrf_token %}
+                      <input hidden type="text" name="product" value="{{product.id}}" style="width:50px;">
+                      <input hidden type="text" name="remove" value="True" style="width:50px;">
+                      <input type="submit" value="-" class="btn btn-block btn-primary ml-0 mt-1 mb-1">
+                    </form>
+                    <div class="text-center col my-auto">{{product|cart_quantity:request.session.cart}} in Cart</div>
+                    <form action="/#{{product.id}}" class="col-2" method="post">
+                      {% csrf_token %}
+                      <input hidden type="text" name="product" value="{{product.id}}" style="width:50px;">
+                      <input type="submit" value="+" class="btn btn-block btn-primary ml-0 mt-1 mb-1">
+                    </form>
+                  </div>
+                </div>
+                {% else %}
+                {% comment %} <button type="button" class="btn-buy"> buy now</button> {% endcomment %}
+                <form action="/#{{product.id}}" method="POST">
+                  {% csrf_token %}
+                  <input hidden type="text" name="product" value="{{product.id}}" style="width:50px;">
+                  <input type="submit" class="btn-cart" value="add to cart"> 
+                </form>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="product-info" onclick="location.href='{% url 'product-details' product.id %}';" style="transition: all 1s ease;">
+              <div class="product-info-top">
+                <!-- <h2 class="sm-title">HealthCare</h2> -->
+                <!-- <div class="rating">
+                  <span><i class="fas fa-star"></i></span>
+                  <span><i class="fas fa-star"></i></span>
+                  <span><i class="fas fa-star"></i></span>
+                  <span><i class="fas fa-star"></i></span>
+                  <span><i class="far fa-star"></i></span>
+                </div> -->
+              </div>
+              <a href="#" class="product-name">{{product.prod_name}}</a>
+              <!-- <p class="product-price">$ 150.00</p> -->
+              <p class="product-price">{{product.prod_price|currency}}</p>
+            </div>
+          </div>
+          <!-- end of single product -->
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- End Latest Medicines Section -->
+
+
+  <!-- ======= Appointment Section ======= -->
+  <section id="appointment" class="appointment section-bg">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Запись</h2>
+        <p>Есть ли у вас какие-либо проблемы со здоровьем и хотите связаться с врачом? Затем получить ваш прием, заполняя
+          Заполните форму и получите лучшую рекомендацию на врача место . Спасибо!</p>
+      </div>
+
+      <form action="{% url 'submit_appointment' %}" method="post" role="form" class="appointment-form">
+      {% csrf_token %}
+        <div class="form-row">
+          <div class="col-md-4 form-group">
+            <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4"
+              data-msg="Please enter at least 4 chars">
+            <div class="validate"></div>
+          </div>
+          <div class="col-md-4 form-group">
+            <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email"
+              data-msg="Please enter a valid email">
+            <div class="validate"></div>
+          </div>
+          <div class="col-md-4 form-group">
+            <input type="tel" class="form-control" name="phone" id="phone" placeholder="Your Phone" data-rule="minlen:4"
+              data-msg="Please enter at least 4 chars">
+            <div class="validate"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4 form-group">
+            <input type="text" name="aptdate" class="form-control" id="aptdate" placeholder="Appointment Date"
+              data-rule="minlen:4" data-msg="Please enter at least 4 chars" onfocus="(this.type='date')" onblur="(this.type='text')">
+            <div class="validate"></div>
+          </div>
+          <div class="col-md-4 form-group">
+            <input type="date" name="tddate" class="form-control" id="tddate" placeholder="Today's Date"
+              data-rule="minlen:4" data-msg="Please enter at least 4 chars" readonly>
+            <div class="validate"></div>
+          </div>
+          <div class="col-md-4 form-group"> 
+            <select name="selectdoctor" id="doctor" class="form-control">
+              <option value="">--Выберите врача--</option>
+              <option value="Anil Bajare">Anil Bajare</option>
+              <option value="Bhupesh Bhond">Bhupesh Bhond</option>
+              <option value="Unmesh Deshmukh">Unmesh Deshmukh</option>
+              <option value="Praful Kadu">Praful Kadu</option>
+            </select>
+            <div class="validate"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <textarea class="form-control" name="message" rows="5" placeholder="Message (Optional)"></textarea>
+          <div class="validate"></div>
+        </div>
+        <div class="mb-3">
+          <div class="loading">Загрузка</div>
+          <div class="error-message"></div>
+          <div class="sent-message">Ваш запрос на встречу был успешно отправлен. Спасибо!</div>
+        </div>
+        <div class="text-center"><button type="submit" >Записаться</button></div>
+      </form>
+    </div>
+  </section><!-- End Appointment Section -->
+
+  <!-- ======= Doctors Section ======= -->
+  <section id="doctors" class="doctors">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Доктора</h2>
+        <p>Мы имеем команду профессиональных и helful докторов связанный с нами, чтобы помочь вам в любой момент. Чувствуйте свободно
+          связаться с врачами и получить лучшую рекомендацию от врачей. Спасибо!</p>
+      </div>
+
+      <div class="row">
+
+        <div class="col-lg-6">
+          <div class="member d-flex align-items-start">
+            <div class="pic"><img src="{% static "img/doctors/doctor-1.jpg" %}" class="img-fluid" alt=""></div>
+            <div class="member-info">
+              <h4>Dr. Anil Bajare</h4>
+              <span>BAMS</span>
+              <p>Известный за предоставление целостного аюрведического лечения.</p>
+              <div class="social">
+                <a href=""><i class="ri-twitter-fill"></i></a>
+                <a href=""><i class="ri-facebook-fill"></i></a>
+                <a href=""><i class="ri-instagram-fill"></i></a>
+                <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mt-4 mt-lg-0">
+          <div class="member d-flex align-items-start">
+            <div class="pic"><img src="{% static "img/doctors/doctor-2.jpg" %}" class="img-fluid" alt=""></div>
+            <div class="member-info">
+              <h4>Dr. Bhupesh Bhond</h4>
+              <span>MBBS</span>
+              <p>Эксперт в категории педиатров , врачи-консультанты.</p>
+              <div class="social">
+                <a href=""><i class="ri-twitter-fill"></i></a>
+                <a href=""><i class="ri-facebook-fill"></i></a>
+                <a href=""><i class="ri-instagram-fill"></i></a>
+                <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mt-4">
+          <div class="member d-flex align-items-start">
+            <div class="pic"><img src="{% static "img/doctors/doctor-3.jpg" %}" class="img-fluid" alt=""></div>
+            <div class="member-info">
+              <h4>Praful Kadu</h4>
+              <span>MBBS , MD</span>
+              <p>Один из ведущих предприятий в Врачебных Врачей.</p>
+              <div class="social">
+                <a href=""><i class="ri-twitter-fill"></i></a>
+                <a href=""><i class="ri-facebook-fill"></i></a>
+                <a href=""><i class="ri-instagram-fill"></i></a>
+                <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mt-4">
+          <div class="member d-flex align-items-start">
+            <div class="pic"><img src="{% static "img/doctors/doctor-4.jpg" %}" class="img-fluid" alt=""></div>
+            <div class="member-info">
+              <h4>Unmesh Deshmukh</h4>
+              <span>MBBS</span>
+              <p>Эксперт в категории ортопедии и магистра хирургии.</p>
+              <div class="social">
+                <a href=""><i class="ri-twitter-fill"></i></a>
+                <a href=""><i class="ri-facebook-fill"></i></a>
+                <a href=""><i class="ri-instagram-fill"></i></a>
+                <a href=""> <i class="ri-linkedin-box-fill"></i> </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section><!-- End Doctors Section -->
+
+
+
+  <!-- ======= Frequently Asked Questions Section ======= -->
+  <section id="faq" class="faq section-bg">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Часто задаваемые вопросы</h2>
+        <p>Мы помогаем вам ответить на каждый ваш вопрос. Наши врачи всегда готовы дать ответ вашего
+          вопрос. Не стесняйтесь, чтобы отправить свой вопрос и мы ответим на вас как можно скорее. Спасибо!</p>
+      </div>
+
+      <div class="faq-list">
+        <ul>
+          <li data-aos="fade-up">
+            <i class="bx bx-help-circle icon-help"></i> <a data-toggle="collapse" class="collapse"
+              href="#faq-list-1">Кто производит лекарства? <i class="bx bx-chevron-down icon-show"></i><i
+                class="bx bx-chevron-up icon-close"></i></a>
+            <div id="faq-list-1" class="collapse show" data-parent=".faq-list">
+              <p>
+                Производители лекарств часто имеют учебные материалы, программы и другие ресурсы, которые могут помочь вам
+                понять ваше состояние здоровья и его управление. Они также могут иметь рецепт помощи
+                программы.
+              </p>
+            </div>
+          </li>
+
+          <li data-aos="fade-up" data-aos-delay="100">
+            <i class="bx bx-help-circle icon-help"></i> <a data-toggle="collapse" href="#faq-list-2"
+              class="collapsed">Какие продукты и вещества взаимодействуют с лекарством? <i
+                class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+            <div id="faq-list-2" class="collapse" data-parent=".faq-list">
+              <p>
+                Взаимодействия с лекарствами являются распространенными и они могут вызвать побочные эффекты или уменьшить благотворное действие
+                препарат. Иногда, взаимодействие может способствовать положительному эффекту. Зная, какие взаимодействующие агенты
+                избегать во время приема препарата (например, пищевые и травяные препараты) будет предотвращать провал терапии и
+                побочные эффекты. Это хорошая идея, чтобы дать ваш фармацевт и все медицинские работники знать лекарства
+                вы принимаете так, чтобы потенциальные взаимодействия лекарств могут быть предотвращены. Также, спрашивать о альтернативных
+                насколько они эффективны.
+              </p>
+            </div>
+          </li>
+
+          <li data-aos="fade-up" data-aos-delay="200">
+            <i class="bx bx-help-circle icon-help"></i> <a data-toggle="collapse" href="#faq-list-3"
+              class="collapsed">Что делать, если доза не принята? <i class="bx bx-chevron-down icon-show"></i><i
+                class="bx bx-chevron-up icon-close"></i></a>
+            <div id="faq-list-3" class="collapse" data-parent=".faq-list">
+              <p>
+                Несмотря на все усилия, в конечном итоге каждый пропустил одну или несколько доз лекарства. Средство
+                для этой ситуации зависит от лекарства. Для некоторых лекарств, просто принимая упущенную дозу как только
+                возможно целесообразно. Для других препаратов более целесообразно подождать и удвоить следующую запланированную
+                доза. (Однако, это может быть опасным с некоторыми лекарствами.) Поскольку рекомендации отличаются для каждого лекарства,
+                Знание правильного средства может предотвратить терапию от провала и побочных эффектов.
+              </p>
+            </div>
+          </li>
+
+          <li data-aos="fade-up" data-aos-delay="300">
+            <i class="bx bx-help-circle icon-help"></i> <a data-toggle="collapse" href="#faq-list-4"
+              class="collapsed">Как следует принимать препарат? <i class="bx bx-chevron-down icon-show"></i><i
+                class="bx bx-chevron-up icon-close"></i></a>
+            <div id="faq-list-4" class="collapse" data-parent=".faq-list">
+              <p>
+                Оптимальная доза и время приема препарата определяются научными исследованиями. Препараты обеспечивают
+                их наибольшей пользы, когда они приняты как предписано. Отклонение от предписанной дозы часто приводит
+                на провал терапии или побочные эффекты. Однако, в некоторых обстоятельствах (например, когда
+                побочные эффекты), изменения дозы могут быть целесообразными, но они должны обсуждаться с медицинским
+                Как можно скорее.
+              </p>
+            </div>
+          </li>
+
+          <li data-aos="fade-up" data-aos-delay="400">
+            <i class="bx bx-help-circle icon-help"></i> <a data-toggle="collapse" href="#faq-list-5"
+              class="collapsed">Что вы должны ожидать от лекарства? <i class="bx bx-chevron-down icon-show"></i><i
+                class="bx bx-chevron-up icon-close"></i></a>
+            <div id="faq-list-5" class="collapse" data-parent=".faq-list">
+              <p>
+                Некоторые лекарства лечат состояние, для которого они предписаны в то время как другие лекарства обеспечивают только облегчение от
+                симптомы. Некоторые препараты обеспечивают немедленную пользу, в то время как другие лекарства требуют больше времени для того, чтобы быть эффективными.
+                Для того чтобы определить, работает ли препарат как планировалось, важно знать ожидаемый результат и
+                как долго это будет продолжаться.
+              </p>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+  </section><!-- End Frequently Asked Questions Section -->
+
+  <!-- ======= Testimonials Section ======= -->
+  <section id="testimonials" class="testimonials">
+    <div class="container">
+      <div class="section-title">
+        <h2>Наши клиенты</h2>
+
+        <div class="owl-carousel testimonials-carousel">
+
+          <div class="testimonial-wrap">
+            <div class="testimonial-item">
+              <img src="{% static "img/testimonials/t-1.jpg" %}" class="testimonial-img" alt="">
+              <h3>Samiksha Gedam</h3>
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                Мне регулярно делают тесты для моего отца, который является пациентом с диабетом. Я люблю удобство дома
+                Сбор образца и быстрая доставка отчетов по тестам на мой e-mail.
+                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+            </div>
+          </div>
+
+          <div class="testimonial-wrap">
+            <div class="testimonial-item">
+              <img src="{% static "img/testimonials/t-2.jpg" %}" class="testimonial-img" alt="">
+              <h3>Vaishnavi Bangar</h3>
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                Мой первый опыт бронирования с MediFirst был простым и беспроблемным. Выбранный пробный слот
+                на их приложение и техник прибыл в нужное время утром. Очень впечатляет.
+                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+            </div>
+          </div>
+
+          <div class="testimonial-wrap">
+            <div class="testimonial-item">
+              <img src="{% static "img/testimonials/t-3.jpg" %}" class="testimonial-img" alt="">
+              <h3>Anurag Dahiwade</h3>
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                Я сделал тесты на беременность моей жены от MediFirst. Обученный технический посетили для сбора образцов и
+                все отчеты были доставлены в срок до ее врача. Обязательно выберет MediFirst для
+                предстоящие испытания.
+                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+            </div>
+          </div>
+
+          <div class="testimonial-wrap">
+            <div class="testimonial-item">
+              <img src="{% static "img/testimonials/t-4.jpg" %}" class="testimonial-img" alt="">
+              <h3>Gaurav Gimonkar</h3>
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                Меня удивил широкий выбор лекарств на MediFirst. Теперь я могу сравнить лекарства на основе
+                по ценам и рейтингам и выбрать лучшее для меня и моей семьи.
+                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+            </div>
+          </div>
+
+          <div class="testimonial-wrap">
+            <div class="testimonial-item">
+              <img src="{% static "img/testimonials/t-5.jpeg" %}" class="testimonial-img" alt="">
+              <h3>Soniya Bhondekar</h3>
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                Моя мать была высокая лихорадка и я знаю, что я должен дать ей, но в нем не возможно пойти на хранение
+                пандемия . Затем, родственник рекомендовал MediFirst. Это помогло мне много.
+                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section><!-- End Testimonials Section -->
+
+
+  <!-- ======= Contact Section ======= -->
+  <section id="contact" class="contact">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Связь</h2>
+        <p>Вы ищете надежную и профессиональную аптеку? Наши услуги по лечению дать вам лучший
+          услуги как надежная аптека в Индии. Связаться с нами, чтобы получить связь и наслаждаться нашими услугами.</p>
+      </div>
+    </div>
+
+    <div>
+      <iframe style="border:0; width: 100%; height: 350px;"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.884123675619!2d77.7541866748472!3d20.957168090234486!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd6a3464a9a39cf%3A0x41ba68e6a59d67ab!2sGovernment%20College%20of%20Engineering!5e0!3m2!1sen!2sin!4v1695198228985!5m2!1sen!2sin"
+        frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div class="container">
+      <div class="row mt-5">
+
+        <div class="col-lg-4">
+          <div class="info">
+            <div class="address">
+              <i class="icofont-google-map"></i>
+              <h4>Местоположение:</h4>
+              <p>Инженерное управление правительства <br>
+                </p>
+            </div>
+
+            <div class="email">
+              <i class="icofont-envelope"></i>
+              <h4>Почта:</h4>
+              <p>MediFirst444@gmail.com</p>
+            </div>
+
+            <div class="phone">
+              <i class="icofont-phone"></i>
+              <h4>Позвонить:</h4>
+              <p>+7777777777</p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="col-lg-8 mt-5 mt-lg-0">
+
+          <form action="{% url 'submit_contact' %}" method="post" role="form" class="contact-form">
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="col-md-6 form-group">
+                <input type="text" name="name" class="form-control" id="name" placeholder="Your Name"
+                  data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
+                <div class="validate"></div>
+              </div>
+              <div class="col-md-6 form-group">
+                <input type="email" class="form-control" name="email" id="email" placeholder="Your Email"
+                  data-rule="email" data-msg="Please enter a valid email" />
+                <div class="validate"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject"
+                data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
+              <div class="validate"></div>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" name="message" rows="5" data-rule="required"
+                data-msg="Please write something for us" placeholder="Message"></textarea>
+              <div class="validate"></div>
+            </div>
+            <div class="mb-3">
+              <div class="loading">Загрузка</div>
+              <div class="error-message"></div>
+              <div class="sent-message">Ваше сообщение отправлено. Спасибо!</div>
+            </div>
+            <div class="text-center"><button type="submit">Отправить сообщение</button></div>
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section><!-- End Contact Section -->
+
+  <section id="donate" class="donate">
+      <div class="modal" id="mymodal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h3 class="title1">Пожертвование</h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <form action="{% url 'donate' %}" method="POST" role="form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                        <div class="form-group">
+                            <b><label>Информаци донора</label></b><br>
+                            &emsp;&emsp;<label>ФИО :</label>
+                            <input type="text" style="position: relative; top:0px; left:20px;" name="dnr_name" required>
+                            <br>
+                            &emsp;&emsp;<label>Адрес :</label>
+                            <input type="text" style="position: relative; top:0px; left:6px;" name="dnr_address" required>
+                            <br>
+                            &emsp;&emsp;<label>Телефон :</label>
+                            <input type="tel" style="position: relative; top:0px; left:17px;" name="dnr_phone" pattern="[0-9]{10}" required>
+
+                            <br><br><b><label>Медицинская информация</label></b><br>
+                            &emsp;&emsp;<label>Название лекарстава :</label>
+                            <input type="text" style="position: relative; top:0px; left:18px;" name="drg_name" required>
+                            <br>
+                            &emsp;&emsp;<label>Номер товара :</label>
+                            <input type="text" style="position: relative; top:0px; left:15px;" name="drg_lotno" required>
+                            <br>
+                            &emsp;&emsp;<label>Дата изготовления :</label>
+                            <input type="date" style="position: relative; top:0px; left:20px;" name="drg_exdate" required>
+                            <br>
+                            &emsp;&emsp;<label>Количество :</label>
+                            <input type="number" style="position: relative; top:0px; left:0px;" name="drg_quantity" min="1" required>
+                            <br>
+                            &emsp;&emsp;<label>Сила лекарстава :</label>
+                            <input type="text" style="position: relative; top:0px; left:1px;" name="drg_strength" required>
+
+                            <br><br><b><label>Сертификаты </label></b><br>
+                            &emsp;&emsp;<label>Подпись донора:</label>
+                            <input type="file" style="position: relative; top:0px; left:0px;" name="signature" accept="image/*" required>
+                            <br>
+                            &emsp;&emsp;<label>Дата :</label>
+                            <input type="date" style="position: relative; top:0px; left:20px;" id="dnt_tddate" name="today_date" readonly>
+                            <br>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="submit" class="btn-submit" onSubmit="alert('Thank you for Donation.');">Принять</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section><!-- End Donate Section -->
+
+
+</main><!-- End #main -->
+
+<script>
+$(document).ready(function(){
+    var dtToday = new Date();
+    
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+        day = '0' + day.toString();
+    
+    var maxDate = year + '-' + month + '-' + day;
+    // alert(maxDate);
+    $('#aptdate').attr('min', maxDate);
+})
+
+</script>
+
+
+<script type="text/javascript">
+var date = new Date();
+
+var day = date.getDate();
+var month = date.getMonth() + 1;
+var year = date.getFullYear();
+
+if (month < 10) month = "0" + month;
+if (day < 10) day = "0" + day;
+
+var today = year + "-" + month + "-" + day;
+
+
+document.getElementById('tddate').value = today;
+document.getElementById('dnt_tddate').value = today;
+document.getElementById('tddate').style.backgroundColor = "white";
+
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+
+{% endblock %}
